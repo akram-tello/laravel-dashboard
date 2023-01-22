@@ -24,8 +24,28 @@ Route::get('/dashboard', function () {return view('dashboard');})->middleware(['
 
 require __DIR__.'/auth.php';
 
+Route::group(['middleware' => 'auth'], function () {
 
-//dashboard
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth'])->name('dashboard');
+    // Super admin routes
+    Route::prefix('super-admin')
+        ->middleware(['super-admin'])
+        ->namespace('SuperAdmin')
+        ->as('super-admin.')
+        ->group(base_path('routes/super-admin.php'));
+
+
+    // Admin routes
+    Route::prefix('admin')
+        ->middleware(['role:admin'])
+        ->namespace('Admin')
+        ->as('admin.')
+        ->group(base_path('routes/admin.php'));
+
+    // user routes
+    Route::prefix('user')
+        ->middleware(['role:employee'])
+        ->namespace('Member')
+        ->as('user.')
+        ->group(base_path('routes/user.php'));
+
+});
